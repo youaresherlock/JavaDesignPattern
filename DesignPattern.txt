@@ -1,0 +1,10 @@
+/*
+* @Author: Clarence
+* @Date:   2018-08-17 00:18:15
+* @Last Modified by:   Clarence
+* @Last Modified time: 2018-08-19 00:59:49
+*/
+/*
+会记录我平时学习设计模式的学习笔记，以及实例代码
+*/
+
