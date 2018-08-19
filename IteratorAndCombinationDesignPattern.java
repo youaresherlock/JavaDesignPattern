@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-08-18 23:59:11
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-08-19 23:55:11
+* @Last Modified time: 2018-08-20 01:10:35
 */
 
 /*
@@ -217,8 +217,214 @@ public class DinerMenuIterator implements Iterator{
 
 //用迭代器改写DinerMenu菜单，我们创建一个新的类DinerMenuWithIterator
 
+package com.gougoucompany.designpattern.iteratorandcombination;
+
+//另一家餐厅类
+
+public class DinerMenuWithIterator{
+	static final int MAX_ITEMS = 6;
+	int numberOfItems = 0;
+	//使用一个数组可以控制菜单的长度，取出菜单项的时候不需要向下转型
+	MenuItem[] menuItems; 
+
+	public DinerMenuWithIterator(){
+		menuItems = new MenuItem[MAX_ITEMS];
+
+		addItem("Vegetarian BLT", 
+			"(Fakin') Bacon with lettuce & tomato on whole wheat",
+			true,
+			2.99);
+
+		addItem("BLT",
+			"Bacon with lettuce & tomato on whole wheat",
+			false,
+			2.99);
+
+		addItem("Soup of the day", 
+			"Soup of the day, with a side of potato salad",
+			false,
+			3.29);
+
+		addItem("Hotdog", 
+			"A hot dog, with saurkraut, relish, onions, topped with cheese",
+			false,
+			3.05);
+	}
+
+	public void addItem(String name, String description,
+		boolean vegetarian, double price){
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		if (numberOfItems >= MAX_ITEMS){
+			System.err.println("Sorry, menu is full! Can't add item to menu");
+		} else {
+			menuItems[numberOfItems] = menuItem;
+			numberOfItems = numberOfItems + 1;
+		}
+	}
+	
+	//调用者不需要知道集合的具体存储方式，只需要知道可以返回对应类型的迭代器对象来遍历集合就可以了
+	public Iterator createIterator() {
+		return new DinerMenuIterator(menuItems);
+	}
+
+	//不需要这个方法，会暴露我们内部的实现
+//	public MenuItem[] getMenuItems(){
+//		return menuItems;
+//	}
+
+	//这里还有其他的方法依赖数组的存储方式
+}
+
+//PancakeHouseMenuIterator迭代器实现
+package com.gougoucompany.designpattern.iteratorandcombination;
+
+import java.util.ArrayList;
+
+public class PancakeHouseMenuIterator implements Iterator{
+	ArrayList<MenuItem> menuItems;
+	int position = 0; //记录遍历的位置
+	
+	public PancakeHouseMenuIterator(ArrayList<MenuItem> menuItems) {
+		this.menuItems = menuItems;
+	}
+
+	@Override
+	public boolean hasNext() {
+		// 这里其实不用判断元素是否是MenuIteme类向上转型的对象，因为泛型做出了限制
+		if(position >= menuItems.size() || !(menuItems.get(position) instanceof MenuItem)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	@Override
+	public Object next() {
+		MenuItem menuItem = menuItems.get(position);
+		position += 1;
+		return menuItem;
+	}
+
+}
+
+//加入生成迭代器方法的类
+package com.gougoucompany.designpattern.iteratorandcombination;
+
+import java.util.ArrayList;
+
+//两家餐厅的实现方式
+
+public class PancakeHouseMenuWithIterator{
+	ArrayList<MenuItem> menuItems;
+
+	public PancakeHouseMenuWithIterator(){
+		menuItems = new ArrayList<>();
+
+		addItem("K&B's Pancake Breakfast", 
+			"Pancakes with scrambled eggs, and toast",
+			true,
+			2.99);
+
+		addItem("Regular Pancake Breakfast",
+			"Pancakes with fried eggs, sausage",
+			false,
+			2.99);
+
+		addItem("BlueBerry Pancakes", 
+			"Pancakes made with fresh blueberries",
+			true,
+			3.49);
+
+		addItem("Waffles", 
+			"Waffles, with your choice of blueberries or strawberries",
+			true,
+			3.59);
+	}
+
+	public void addItem(String name, String description,
+		boolean vegetarian, double price){
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		menuItems.add(menuItem);
+	}
+
+//	public ArrayList<MenuItem> getMenuItems(){
+//		return menuItems;
+//	}
+	
+	public Iterator createIterator() {
+		return new PancakeHouseMenuIterator(menuItems);
+	}
+
+	//其他方法依赖于ArrayList存储方式
+}
 
 
+//我们的服务员拿到菜单不需要知道菜单的存储方式可以通过拿到菜单迭代器来遍历集合中的对象
+package com.gougoucompany.designpattern.iteratorandcombination;
+
+
+public class Waitress{
+	PancakeHouseMenuWithIterator pancakeHouseMenu;
+	DinerMenuWithIterator dinerMenu;
+
+	public Waitress(PancakeHouseMenuWithIterator pancakeHouseMenu, DinerMenuWithIterator dinerMenu){
+		this.pancakeHouseMenu = pancakeHouseMenu;
+		this.dinerMenu = dinerMenu;
+	}
+
+	public void printMenu(){
+		Iterator pancakeIterator = pancakeHouseMenu.createIterator();
+		Iterator dinerMenuIterator = dinerMenu.createIterator();
+		System.out.println("MENU\n----------\nBREAKFAST");
+		printMenu(pancakeIterator);
+		System.out.println("\nLUNCH");
+		printMenu(dinerMenuIterator);
+	}
+
+	private void printMenu(Iterator iterator){
+		while(iterator.hasNext()){
+			MenuItem menuItem = (MenuItem) iterator.next(); //注意这里要向下转型 
+			System.out.print(menuItem.getName() + ", ");
+			System.out.print(menuItem.getPrice() + " -- ");
+			System.out.println(menuItem.getDescription());
+		}
+	}
+}
+
+//测试程序
+package com.gougoucompany.designpattern.iteratorandcombination;
+public class MenuTestDrive{
+	public static void main(String args[]){
+		PancakeHouseMenuWithIterator pancakeHouseMenu = new PancakeHouseMenuWithIterator();
+		DinerMenuWithIterator dinerMenu = new DinerMenuWithIterator();
+		
+//		Object obj = (Object)dinerMenu;
+//		
+//		System.out.println(dinerMenu instanceof DinerMenuWithIterator);
+//		System.out.println(obj instanceof DinerMenuWithIterator);
+//		
+//		System.out.println(DinerMenuWithIterator.class.isInstance(dinerMenu));
+//		System.out.println(DinerMenuWithIterator.class.isInstance(obj));
+
+		Waitress waitress = new Waitress(pancakeHouseMenu, dinerMenu);
+
+		waitress.printMenu();
+	}
+}
+
+//MENU
+//----------
+//BREAKFAST
+//K&B's Pancake Breakfast, 2.99 -- Pancakes with scrambled eggs, and toast
+//Regular Pancake Breakfast, 2.99 -- Pancakes with fried eggs, sausage
+//BlueBerry Pancakes, 3.49 -- Pancakes made with fresh blueberries
+//Waffles, 3.59 -- Waffles, with your choice of blueberries or strawberries
+//
+//LUNCH
+//Vegetarian BLT, 2.99 -- (Fakin') Bacon with lettuce & tomato on whole wheat
+//BLT, 2.99 -- Bacon with lettuce & tomato on whole wheat
+//Soup of the day, 3.29 -- Soup of the day, with a side of potato salad
+//Hotdog, 3.05 -- A hot dog, with saurkraut, relish, onions, topped with cheese
 
 
 

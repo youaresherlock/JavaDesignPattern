@@ -42,10 +42,16 @@ public class DinerMenuWithIterator{
 			numberOfItems = numberOfItems + 1;
 		}
 	}
-
-	public MenuItem[] getMenuItems(){
-		return menuItems;
+	
+	//调用者不需要知道集合的具体存储方式，只需要知道可以返回对应类型的迭代器对象来遍历集合就可以了
+	public Iterator createIterator() {
+		return new DinerMenuIterator(menuItems);
 	}
+
+	//不需要这个方法，会暴露我们内部的实现
+//	public MenuItem[] getMenuItems(){
+//		return menuItems;
+//	}
 
 	//这里还有其他的方法依赖数组的存储方式
 }

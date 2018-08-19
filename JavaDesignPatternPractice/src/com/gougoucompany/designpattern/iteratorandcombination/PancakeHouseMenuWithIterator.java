@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 //两家餐厅的实现方式
 
-public class PancakeHouseMenu{
+public class PancakeHouseMenuWithIterator{
 	ArrayList<MenuItem> menuItems;
 
-	public PancakeHouseMenu(){
+	public PancakeHouseMenuWithIterator(){
 		menuItems = new ArrayList<>();
 
 		addItem("K&B's Pancake Breakfast", 
@@ -37,8 +37,12 @@ public class PancakeHouseMenu{
 		menuItems.add(menuItem);
 	}
 
-	public ArrayList<MenuItem> getMenuItems(){
-		return menuItems;
+//	public ArrayList<MenuItem> getMenuItems(){
+//		return menuItems;
+//	}
+	
+	public Iterator createIterator() {
+		return new PancakeHouseMenuIterator(menuItems);
 	}
 
 	//其他方法依赖于ArrayList存储方式
