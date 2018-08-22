@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-08-18 23:59:11
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-08-22 23:50:09
+* @Last Modified time: 2018-08-23 00:10:02
 */
 
 /*
@@ -875,6 +875,52 @@ Veggie Burger and Air Fries, 3.99 -- Veggie burger on a whole wheat bun, lettuce
 */
 
 
+
+/*
+Java5中，所有的集合都已经新增了对遍历的支持，所以你甚至不需要请求迭代器了
+for/in这可以让你在一个集合或者一个数组中遍历，而且不需要显示创建迭代器。
+for(Object obj : collection){
+	....
+}
+
+每次我们有新的菜单加入，就必须打开女招待实现并加入更多的代码，而且print方法代码时重复的。
+我们仍然将菜单成分离而独立的对象--我们需要一种一起管理他们的方法。
+*/
+package com.gougoucompany.designpattern.iteratorsecond;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import com.gougoucompany.designpattern.iteratorfirst.MenuItem;
+
+public class WaitressSecond {
+	ArrayList<Menu> menus;
+	
+	public WaitressSecond(ArrayList<Menu> menus) {
+		this.menus = menus;
+	}
+	
+	public void printMenu() {
+//		Iterator<MenuItem> menuIterator = menus.iterator(); 
+//		while(menuIterator.hasNext()) {
+//			Menu menu = (Menu)menuIterator.next();
+//			printMenu(menu.createIterator());
+//		}
+		
+		for(Menu menu : menus) {
+			printMenu(menu.createIterator());
+		}
+	}
+	
+	private void printMenu(Iterator<MenuItem> iterator) {
+		while(iterator.hasNext()) {
+			MenuItem menuItem = (MenuItem) iterator.next(); //注意这里要向下转型 
+			System.out.print(menuItem.getName() + ", ");
+			System.out.print(menuItem.getPrice() + " -- ");
+			System.out.println(menuItem.getDescription());
+		}
+	}
+}
 
 
 
