@@ -1,4 +1,4 @@
-package com.gougoucompany.designpattern.iteratorandcombination;
+package com.gougoucompany.designpattern.iteratorfirst;
 
 //²âÊÔ³ÌĞò
 public class MenuTestDrive{

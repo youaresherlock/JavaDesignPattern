@@ -1,4 +1,4 @@
-package com.gougoucompany.designpattern.iteratorandcombination;
+package com.gougoucompany.designpattern.iteratorfirst;
 
 //²Ëµ¥ÏîÀà
 public class MenuItem{

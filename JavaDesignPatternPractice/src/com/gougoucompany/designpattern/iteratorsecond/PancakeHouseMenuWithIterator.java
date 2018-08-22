@@ -1,13 +1,16 @@
-package com.gougoucompany.designpattern.iteratorandcombination;
+package com.gougoucompany.designpattern.iteratorsecond;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import com.gougoucompany.designpattern.iteratorfirst.MenuItem;
 
 //两家餐厅的实现方式
 
-public class PancakeHouseMenu{
+public class PancakeHouseMenuWithIterator implements Menu{
 	ArrayList<MenuItem> menuItems;
 
-	public PancakeHouseMenu(){
+	public PancakeHouseMenuWithIterator(){
 		menuItems = new ArrayList<>();
 
 		addItem("K&B's Pancake Breakfast", 
@@ -37,8 +40,12 @@ public class PancakeHouseMenu{
 		menuItems.add(menuItem);
 	}
 
-	public ArrayList<MenuItem> getMenuItems(){
-		return menuItems;
+//	public ArrayList<MenuItem> getMenuItems(){
+//		return menuItems;
+//	}
+	
+	public Iterator<MenuItem> createIterator() {
+		return menuItems.iterator(); //不创建自己的迭代器，而调用菜单项ArrayList的iterator方法
 	}
 
 	//其他方法依赖于ArrayList存储方式

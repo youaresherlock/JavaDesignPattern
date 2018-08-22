@@ -1,3 +1,4 @@
+package com.gougoucompany.designpattern.iteratorfirst;
 //package com.gougoucompany.designpattern.iteratorandcombination;
 //
 //import java.util.ArrayList;
