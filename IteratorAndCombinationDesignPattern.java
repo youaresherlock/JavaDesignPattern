@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-08-18 23:59:11
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-08-22 22:56:10
+* @Last Modified time: 2018-08-22 23:50:09
 */
 
 /*
@@ -698,15 +698,181 @@ BLT, 2.99 -- Bacon with lettuce & tomato on whole wheat
 Soup of the day, 3.29 -- Soup of the day, with a side of potato salad
 Hotdog, 3.05 -- A hot dog, with saurkraut, relish, onions, topped with cheese
 */
+/*
+这样编程的好处，两个菜单都实现了Menu接口，女招待可以利用接口，而不是具体类引用每一个
+菜单对象，通过"针对接口编程，而不是针对实现编程"可以减少女招待和具体类之间的依赖。
+定义迭代器模式:
+	迭代器模式提供一种方法顺序访问一个聚合对象中的各个元素，而又不暴露其内部的表示。
+迭代器模式把元素之间的游走的责任交给迭代器，而不是聚合对象。这不仅让聚合的接口和实现
+变得更加简洁，也可以让聚合更专注在它所应该专注的事情上面，而不必去理会遍历的事情。
+
+单一责任:
+	一个类应该只有一个引起变化的原因，比如菜单类，实现管理某种集合，把遍历的责任交给迭代器去完成，
+	这样该类就不容易错误，也容易修改。
+内聚: 它用来度量一个类或模块紧密地达到单一目的或责任。 当一个模块或一个类被设计成只支持一组相关的功能时，
+我们说它具有高内聚。内聚是一个比单一责任更普遍的概念，但两者关系密切。高内聚的类更容易维护。
+*/
 
 
 
+//我们又有新的需求，需要合并咖啡厅的菜单
+//咖啡厅的菜单
+package com.gougoucompany.designpattern.iteratorsecond;
 
+import java.util.Hashtable;
+import com.gougoucompany.designpattern.iteratorfirst.MenuItem;
 
+//我们在原来的早餐和午餐菜单中加入了晚餐菜单，这时候迭代器的优点就可以体现出来了
+public class CafeMenu {
+	Hashtable<String, MenuItem> menuItems = new Hashtable<String, MenuItem>();
+	
+	public CafeMenu() {
+	
+	}
+	
+	public void addItem(String name, String description,
+			boolean vegetarian, double price) {
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		menuItems.put(menuItem.getName(), menuItem);
+	}
+	
+	public Hashtable<String, MenuItem> getItems() {
+		return menuItems;
+	}
+	
+}
+//重做咖啡厅代码
 
+package com.gougoucompany.designpattern.iteratorsecond;
 
+import java.util.Hashtable;
+import java.util.Iterator;
 
+import com.gougoucompany.designpattern.iteratorfirst.MenuItem;
 
+//我们在原来的早餐和午餐菜单中加入了晚餐菜单，这时候迭代器的优点就可以体现出来了
+public class CafeMenu implements Menu{
+	Hashtable<String, MenuItem> menuItems = new Hashtable<String, MenuItem>();
+	
+	public CafeMenu() {
+		addItem("Veggie Burger and Air Fries",
+				"Veggie burger on a whole wheat bun, lettuce, tomato, and fries",
+				true, 3.99);
+		addItem("Soup of the day",
+				"A cup of the soup of the day, with a side salad",
+				false, 3.69);
+		addItem("Burrito",
+				"A large burrito, with whole pinto beans, salsa, guacamole",
+				true, 4.29);
+	}
+	
+	public void addItem(String name, String description,
+			boolean vegetarian, double price) {
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		menuItems.put(menuItem.getName(), menuItem);
+	}
+	
+	public Hashtable<String, MenuItem> getItems() {
+		return menuItems;
+	}
+
+	@Override
+	public Iterator<MenuItem> createIterator() {
+		// TODO Auto-generated method stub
+		return menuItems.values().iterator(); //取得值的那部分迭代器
+	}
+	
+}
+
+//修改女招待类
+package com.gougoucompany.designpattern.iteratorsecond;
+
+import java.util.Iterator;
+
+import com.gougoucompany.designpattern.iteratorfirst.MenuItem;
+
+//我们的服务员拿到菜单不需要知道菜单的存储方式可以通过拿到菜单迭代器来遍历集合中的对象
+public class Waitress{
+	Menu pancakeHouseMenu;
+	Menu dinerMenu;
+	Menu cafeMenu;
+
+	//将具体菜单类改成接口
+	public Waitress(Menu pancakeHouseMenu, Menu dinerMenu, Menu cafeMenu){
+		this.pancakeHouseMenu = pancakeHouseMenu;
+		this.dinerMenu = dinerMenu;
+		this.cafeMenu = cafeMenu;
+	}
+
+	public void printMenu(){
+		Iterator<MenuItem> pancakeIterator = pancakeHouseMenu.createIterator();
+		Iterator<MenuItem> dinerMenuIterator = dinerMenu.createIterator();
+		Iterator<MenuItem> cafeMenuIterator = cafeMenu.createIterator();
+		System.out.println("MENU\n----------\nBREAKFAST");
+		printMenu(pancakeIterator);
+		System.out.println("\nLUNCH");
+		printMenu(dinerMenuIterator);
+		System.out.println("\nDINNER");
+		printMenu(cafeMenuIterator);
+	}
+
+	private void printMenu(Iterator<MenuItem> iterator){
+		while(iterator.hasNext()){
+			MenuItem menuItem = (MenuItem) iterator.next(); //注意这里要向下转型 
+			System.out.print(menuItem.getName() + ", ");
+			System.out.print(menuItem.getPrice() + " -- ");
+			System.out.println(menuItem.getDescription());
+		}
+	}
+}
+//测试类
+
+package com.gougoucompany.designpattern.iteratorsecond;
+
+//测试程序
+public class MenuTestDrive{
+	public static void main(String args[]){
+		PancakeHouseMenuWithIterator pancakeHouseMenu = new PancakeHouseMenuWithIterator();
+		DinerMenuWithIterator dinerMenu = new DinerMenuWithIterator();
+		CafeMenu cafeMenu = new CafeMenu();
+		
+//		Object obj = (Object)dinerMenu;
+//		
+//		System.out.println(dinerMenu instanceof DinerMenuWithIterator);
+//		System.out.println(obj instanceof DinerMenuWithIterator);
+//		
+//		System.out.println(DinerMenuWithIterator.class.isInstance(dinerMenu));
+//		System.out.println(DinerMenuWithIterator.class.isInstance(obj));
+
+		Waitress waitress = new Waitress(pancakeHouseMenu, dinerMenu, cafeMenu);
+
+		waitress.printMenu();
+	}
+}
+
+/*
+Hotdog, 3.05 -- A hot dog, with saurkraut, relish, onions, topped with cheese
+
+MENU
+----------
+BREAKFAST
+K&B's Pancake Breakfast, 2.99 -- Pancakes with scrambled eggs, and toast
+Regular Pancake Breakfast, 2.99 -- Pancakes with fried eggs, sausage
+BlueBerry Pancakes, 3.49 -- Pancakes made with fresh blueberries
+Waffles, 3.59 -- Waffles, with your choice of blueberries or strawberries
+
+LUNCH
+Vegetarian BLT, 2.99 -- (Fakin') Bacon with lettuce & tomato on whole wheat
+BLT, 2.99 -- Bacon with lettuce & tomato on whole wheat
+Soup of the day, 3.29 -- Soup of the day, with a side of potato salad
+Hotdog, 3.05 -- A hot dog, with saurkraut, relish, onions, topped with cheese
+
+DINNER
+Soup of the day, 3.69 -- A cup of the soup of the day, with a side salad
+Burrito, 4.29 -- A large burrito, with whole pinto beans, salsa, guacamole
+Veggie Burger and Air Fries, 3.99 -- Veggie burger on a whole wheat bun, lettuce, tomato, and fries
+
+*/
 
 
 

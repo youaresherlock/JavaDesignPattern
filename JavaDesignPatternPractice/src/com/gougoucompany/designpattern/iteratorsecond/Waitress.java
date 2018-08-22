@@ -8,20 +8,25 @@ import com.gougoucompany.designpattern.iteratorfirst.MenuItem;
 public class Waitress{
 	Menu pancakeHouseMenu;
 	Menu dinerMenu;
+	Menu cafeMenu;
 
 	//将具体菜单类改成接口
-	public Waitress(Menu pancakeHouseMenu, Menu dinerMenu){
+	public Waitress(Menu pancakeHouseMenu, Menu dinerMenu, Menu cafeMenu){
 		this.pancakeHouseMenu = pancakeHouseMenu;
 		this.dinerMenu = dinerMenu;
+		this.cafeMenu = cafeMenu;
 	}
 
 	public void printMenu(){
 		Iterator<MenuItem> pancakeIterator = pancakeHouseMenu.createIterator();
 		Iterator<MenuItem> dinerMenuIterator = dinerMenu.createIterator();
+		Iterator<MenuItem> cafeMenuIterator = cafeMenu.createIterator();
 		System.out.println("MENU\n----------\nBREAKFAST");
 		printMenu(pancakeIterator);
 		System.out.println("\nLUNCH");
 		printMenu(dinerMenuIterator);
+		System.out.println("\nDINNER");
+		printMenu(cafeMenuIterator);
 	}
 
 	private void printMenu(Iterator<MenuItem> iterator){
