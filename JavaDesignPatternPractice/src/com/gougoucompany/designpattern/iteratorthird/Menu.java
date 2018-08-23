@@ -3,7 +3,7 @@ package com.gougoucompany.designpattern.iteratorthird;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Menu extends MenuComponent {
+public  class Menu extends MenuComponent {
 	ArrayList<MenuComponent> menuComponents = new ArrayList<>();
 	String name;
 	String description;
@@ -52,6 +52,13 @@ public class Menu extends MenuComponent {
 			menuComponent.print(); //如果碰到菜单项直接打印出菜单项信息，如果不是打印出菜单信息并且继续递归直到叶节点
 		}
 	}
+
+	@Override
+	public Iterator<?> createIterator() {
+		return null;
+		//return new CompositeIterator(menuComponents.iterator());
+	}
+
 }
 
 

@@ -1,5 +1,7 @@
 package com.gougoucompany.designpattern.iteratorthird;
 
+import java.util.Iterator;
+
 //实现菜单组件
 /*
 MenuComponent对每个方法都提供默认的实现，因为有些方法只对菜单项有意义，而有些只对菜单有意义，默认实现是抛出UnsupportedOperationException
@@ -38,6 +40,9 @@ public abstract class MenuComponent {
 	public void print() {
 		throw new UnsupportedOperationException();
 	}
+	
+	//我们后来加入的迭代器抽象方法，来满足客户的特定需求
+	public abstract Iterator<?> createIterator();
 }
 
 
