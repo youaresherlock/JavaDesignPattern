@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-08-18 23:59:11
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-08-23 18:27:13
+* @Last Modified time: 2018-08-23 22:18:01
 */
 
 /*
@@ -1079,9 +1079,103 @@ public class Menu extends MenuComponent {
 	}
 }
 
+//我们Menu类print()方法必须打印出它包含的一切，可以使用递归的方式来完成。我们修正一下这个print()
+public void print() {
+		System.out.print("\n" + getName());
+		System.out.println(", " + getDescription());
+		System.out.println("-----------------------");
+		
+		Iterator<MenuComponent> iterator = menuComponents.iterator();
+		while(iterator.hasNext()) {
+			MenuComponent menuComponent = (MenuComponent)iterator.next();
+			menuComponent.print(); //如果碰到菜单项直接打印出菜单项信息，如果不是打印出菜单信息并且继续递归直到叶节点
+		}
+	}
 
 
+//Waitress类
+package com.gougoucompany.designpattern.iteratorthird;
 
+public class Waitress {
+	MenuComponent allMenus;
+	
+	public Waitress(MenuComponent allMenus) {
+		this.allMenus = allMenus;
+	}
+	
+	public void printMenu() {
+		allMenus.print(); //只需调用最顶层菜单的print()
+	}
+}
+
+
+//测试程序
+package com.gougoucompany.designpattern.iteratorthird;
+
+public class MenuTestDrive {
+	public static void main(String[] args) {
+		MenuComponent pancakeHouseMenu =
+				new Menu("PANCAKE HOUSE MENU", "Breakfast");
+		MenuComponent dinerMenu =
+				new Menu("DINER MENU", "Lunch");
+		MenuComponent cafeMenu =
+				new Menu("CAFE MENU", "Diner");
+		MenuComponent dessertMenu =
+				new Menu("DESSERT MENU", "Dessert of course!");
+		
+		MenuComponent allMenus = new Menu("ALL MENUS", "All menus combined");
+		
+		allMenus.add(pancakeHouseMenu);
+		allMenus.add(dinerMenu);
+		allMenus.add(cafeMenu);
+		
+		//这里加入其它菜单项
+		
+		dinerMenu.add(new MenuItem(
+				"Pasta", 
+				"Spaghetti with Marinara Sauce, and a slice of sourdough bread",
+				true,
+				3.89));
+		
+		dinerMenu.add(dessertMenu);
+		
+		dessertMenu.add(new MenuItem(
+				"Apple Pie", 
+				"Apple pie with a flakey crust, topped with vanilla ice cream",
+				true,
+				1.59));
+		
+		//在这里加入更多菜单项
+		
+		Waitress waitress = new Waitress(allMenus);
+		waitress.printMenu();	
+		
+	}
+}
+
+
+/*
+从结果来分析，我们根节点下面有三个菜单结点，只有dinerMenu有一个菜单项,和一个菜单，另外两个菜单项没有子节点
+递归顺序就是前序遍历的顺序，先是pancakeHouseMenu,dinerMenu,子菜单Pasta,dessertMenu,菜单项Apple pie,，最后是cafeMenu
+ALL MENUS, All menus combined
+-----------------------
+
+PANCAKE HOUSE MENU, Breakfast
+-----------------------
+
+DINER MENU, Lunch
+-----------------------
+  Pasta(v), 3.89
+   -- Spaghetti with Marinara Sauce, and a slice of sourdough bread
+
+DESSERT MENU, Dessert of course!
+-----------------------
+  Apple Pie(v), 1.59
+   -- Apple pie with a flakey crust, topped with vanilla ice cream
+
+CAFE MENU, Diner
+-----------------------
+ */
 
 
 
