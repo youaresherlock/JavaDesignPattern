@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-08-18 23:59:11
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-08-23 00:10:02
+* @Last Modified time: 2018-08-23 18:27:13
 */
 
 /*
@@ -924,9 +924,160 @@ public class WaitressSecond {
 
 
 
+/*
+需求又变更了，我们希望在餐厅菜单中加入一个甜点菜单，但是我们不能直接将甜点菜单赋值给菜单项数组，
+类型不同，又要修改了。实际上，我们已经到达了一个复杂级别，如果现在不重新设计，就无法容纳未来增加
+的菜单或子菜单等需求。
+
+我们要介绍另一个模式解决这个难题-->组合模式
+组合模式:
+	允许你将对象组合成树形结构来表现"整体/部分"层次结构。组合能让客户以一致的方式处理个别对象以及对象组合。
+也就是说我们能把相同的操作应用在组合和个别对象上。
+*/
 
 
 
+/*
+利用组合设计菜单
+我们需要创建一个组件接口来作为菜单和菜单项的共同接口，让我们能够用统一的做法来处理菜单和菜单项。 
+类组成:
+Waitress女招待类: 将使用菜单组件接口访问菜单和菜单项
+MenuComponent接口类: 菜单组件提供了一个接口，让菜单项和菜单共同使用。我们希望能为他们提供默认的实现，
+所以在这里定义成抽象类。
+MenuComponent方法: getName(), getDescription(), getPrice(), isVegetarian(), print(), add(Component), remove(Component), getChild(int)
+菜单项类MenuItem: getName(), getDescription(), getPrice(), isVegetarian(), print()
+Menu类: 属性->menuComponents 方法->getName(), getDescription(), print(), add(Component), remove(Component), getChild(int)
+*/
+
+//实现菜单组件
+/*
+MenuComponent对每个方法都提供默认的实现，因为有些方法只对菜单项有意义，而有些只对菜单有意义，默认实现是抛出UnsupportedOperationException
+异常。这样，如果菜单项或菜单不支持某个操作，他们就不需做任何事情，直接继承默认实现就可以了
+*/
+package com.gougoucompany.designpattern.iteratorthird;
+
+public abstract class MenuComponent {
+	
+	public void add(MenuComponent menuComponent) {
+		throw new UnsupportedOperationException();
+	}
+	
+	public void remove(MenuComponent menuComponent) {
+		throw new UnsupportedOperationException();
+	}
+	
+	public MenuComponent getChild(int i) {
+		throw new UnsupportedOperationException();
+	}
+	
+	public String getName() {
+		throw new UnsupportedOperationException();
+	}
+	
+	public String getDescription() {
+		throw new UnsupportedOperationException();
+	}
+	
+	public double getPrice() {
+		throw new UnsupportedOperationException();
+	}
+	
+	public boolean isVegetarian() {
+		throw new UnsupportedOperationException();
+	}
+	
+	public void print() {
+		throw new UnsupportedOperationException();
+	}
+}
+
+//菜单项类，这是组合类图里的叶子节点，它实现组合内元素的行为
+
+package com.gougoucompany.designpattern.iteratorthird;
+public class MenuItem extends MenuComponent{
+	String name;
+	String description;
+	boolean vegetarian;
+	double price;
+	
+	public MenuItem(String name, String description,
+			boolean vegetarian, double price) {
+		this.name = name;
+		this.description = description;
+		this.vegetarian = vegetarian;
+		this.price = price;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public boolean isVegetarian() {
+		return vegetarian;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+	
+	public void print() {
+		System.out.print("  " +  getName());
+		if(isVegetarian()) {
+			System.out.print("(v)");
+		}
+		System.out.println(", " + getPrice());
+		System.out.println("   -- " + getDescription());
+	}
+}
+
+//实现组合菜单，此组合菜单可以持有菜单项或其他菜单
+
+package com.gougoucompany.designpattern.iteratorthird;
+
+import java.util.ArrayList;
+
+public class Menu extends MenuComponent {
+	ArrayList<MenuComponent> menuComponents = new ArrayList<>();
+	String name;
+	String description;
+	
+	public Menu(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
+	
+	public void add(MenuComponent menuComponent) {
+		menuComponents.add(menuComponent);
+	}
+	
+	public void remove(MenuComponent menuComponent) {
+		menuComponents.remove(menuComponent);
+	}
+	
+	public MenuComponent getChild(int i) {
+		return (MenuComponent)menuComponents.get(i);
+	}
+	
+	//注: 我们没有覆盖getPrice()和getVegetarian()，因为这些方法可能对Menu没有意义，如果调用这些方法，会抛出UnsupportedOperationException异常
+	public String getName() {
+		return name;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	//打印菜单的名称和描述
+	public void print() {
+		System.out.print("\n" + getName());
+		System.out.println(", " + getDescription());
+		System.out.println("-----------------------");
+	}
+}
 
 
 
