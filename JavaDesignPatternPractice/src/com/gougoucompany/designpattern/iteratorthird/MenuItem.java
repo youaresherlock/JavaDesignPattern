@@ -1,5 +1,6 @@
 package com.gougoucompany.designpattern.iteratorthird;
 
+import java.awt.MenuContainer;
 import java.util.Iterator;
 
 //菜单项类，这是组合类图里的叶子节点，它实现组合内元素的行为
@@ -43,9 +44,8 @@ public class MenuItem extends MenuComponent{
 	}
 
 	@Override
-	public Iterator<?> createIterator() {
-		// return new NullIterator();
-		return null;
+	public Iterator<MenuComponent> createIterator() {
+		return new NullIterator();
 	}
 }
 

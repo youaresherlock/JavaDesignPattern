@@ -42,7 +42,7 @@ public abstract class MenuComponent {
 	}
 	
 	//我们后来加入的迭代器抽象方法，来满足客户的特定需求
-	public abstract Iterator<?> createIterator();
+	public abstract Iterator<MenuComponent> createIterator();
 }
 
 

@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-08-18 23:59:11
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-08-23 23:41:35
+* @Last Modified time: 2018-08-26 23:47:21
 */
 
 /*
@@ -1193,6 +1193,203 @@ MenuComponent类中同时具有两种类型的操作，因为客户有机会对�
 //在MenuComponent加入此抽象方法public abstract Iterator createIterator();并在菜单和菜单项中实现这个方法
 
 //CompositeIterator迭代器责任是遍历组件内的菜单项，而且确保所有的子菜单都被包括进来。
+//CompositeIterator类实现
+package com.gougoucompany.designpattern.iteratorthird;
+
+import java.util.Iterator;
+import java.util.Stack;
+
+public class CompositeIterator implements Iterator<MenuComponent>{
+	Stack<Iterator<MenuComponent>> Stack = new Stack<>();
+	
+	public CompositeIterator(Iterator<MenuComponent> iterator) {
+		Stack.push(iterator); //将要遍历的顶层组合的迭代器传入，压入堆栈
+	}
+
+	@Override
+	public boolean hasNext() {
+		//是否有下一个元素，如果堆栈为空，没有下一个元素
+		if(Stack.empty()) {
+			return false;
+		} else {
+			//否则， 从栈顶取出迭代器，如果它没有下一个元素，则弹出堆栈，递归调用haxNext()
+			Iterator<MenuComponent> iterator = (Iterator<MenuComponent>) Stack.peek(); //查看堆栈中第一个首元素
+			if(!iterator.hasNext()) {
+				Stack.pop();
+				return hasNext();
+			} else {
+				return true; //否则表示还有下一个元素，返回true
+			}
+		}
+	}
+
+	@Override
+	public MenuComponent next() {
+		//客户要取下一个元素的时候，先用hasNext()确认是否还有下一个
+		if(hasNext()) {
+			Iterator<MenuComponent> iterator = (Iterator<MenuComponent>) Stack.peek();
+			MenuComponent component = (MenuComponent) iterator.next();
+			if (component instanceof Menu) {
+				//如果元素是一个菜单，则我们有了另一个需要被包含进遍历的组合，所有的子集合的迭代器，压入堆栈。
+				Stack.push(component.createIterator()); //这种类似于深度优先遍历
+			}
+			return (MenuComponent) component;
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public void remove() {
+		throw new UnsupportedOperationException(); //不支持删除，只遍历
+	}
+
+}
+
+/*
+空迭代器，菜单项内没有什么可以遍历的，因此我们的createIterator()方法返回一个空的迭代器
+如何实现?
+方法一:
+	返回null,但是客户代码就需要用条件语句来判断返回值是否为null,反之空指针异常,比如调用菜单项的方法isVegetarian(),首先要判断是不是null
+方法二:
+	返回一个迭代器，而这个迭代器的hasNext()永远返回false
+*/
+package com.gougoucompany.designpattern.iteratorthird;
+
+import java.util.Iterator;
+
+public class NullIterator implements Iterator<MenuComponent>{
+
+	@Override
+	public boolean hasNext() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	
+	//空迭代器不支持remove
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+
+
+	@Override
+	public MenuComponent next() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}
+
+//使用组合与迭代器之后的Waitress
+public class Waitress{
+	MenuComponent allMenus;
+
+	public Waitress(MenuComponent allMenus){
+		this.allMenus = allMenus;
+	}
+
+	public void printMenu(){
+		allMenus.print();
+	}
+
+	public void printVegetarainMenu(){
+		//只打印蔬菜的菜单信息
+		Iterator<MenuComponent> iterator = allMenus.createIterator();
+		System.out.println("\nVEGETARIAN MENU\n---------")
+		while(iterator.hasNext()){
+			MenuComponent menuComponent = 
+			(MenuComponent) iterator.next();
+			//只有菜单项可以调用isVegetarain()方法，菜单会报出异常我们捕获让遍历继续进行
+			try{
+				if(menuComponent.isVegetarian()){
+					menuComponent.print();
+				}
+			} catch(UnsupportedOperationException e){}
+		}
+	}
+}
+
+
+
+//结果
+package com.gougoucompany.designpattern.iteratorthird;
+
+public class MenuTestDrive {
+	public static void main(String[] args) {
+		MenuComponent pancakeHouseMenu =
+				new Menu("PANCAKE HOUSE MENU", "Breakfast");
+		MenuComponent dinerMenu =
+				new Menu("DINER MENU", "Lunch");
+		MenuComponent cafeMenu =
+				new Menu("CAFE MENU", "Diner");
+		MenuComponent dessertMenu =
+				new Menu("DESSERT MENU", "Dessert of course!");
+		
+		MenuComponent allMenus = new Menu("ALL MENUS", "All menus combined");
+		
+		allMenus.add(pancakeHouseMenu);
+		allMenus.add(dinerMenu);
+		allMenus.add(cafeMenu);
+		
+		//这里加入其它菜单项
+		
+		dinerMenu.add(new MenuItem(
+				"Pasta", 
+				"Spaghetti with Marinara Sauce, and a slice of sourdough bread",
+				true,
+				3.89));
+		
+		dinerMenu.add(dessertMenu);
+		
+		dessertMenu.add(new MenuItem(
+				"Apple Pie", 
+				"Apple pie with a flakey crust, topped with vanilla ice cream",
+				true,
+				1.59));
+		
+		//在这里加入更多菜单项
+		
+		Waitress waitress = new Waitress(allMenus);
+		waitress.printMenu();	
+		
+	}
+}
+
+
+/*
+\
+ALL MENUS, All menus combined
+-----------------------
+
+PANCAKE HOUSE MENU, Breakfast
+-----------------------
+
+DINER MENU, Lunch
+-----------------------
+  Pasta(v), 3.89
+   -- Spaghetti with Marinara Sauce, and a slice of sourdough bread
+
+DESSERT MENU, Dessert of course!
+-----------------------
+  Apple Pie(v), 1.59
+   -- Apple pie with a flakey crust, topped with vanilla ice cream
+
+CAFE MENU, Diner
+-----------------------
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
