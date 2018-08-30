@@ -29,7 +29,7 @@ public class Waitress{
 	public void printVegetarainMenu(){
 		//只打印蔬菜的菜单信息
 		Iterator<MenuComponent> iterator = allMenus.createIterator();
-		System.out.println("\nVEGETARIAN MENU\n---------")
+		System.out.println("\nVEGETARIAN MENU\n---------");
 		while(iterator.hasNext()){
 			MenuComponent menuComponent = 
 			(MenuComponent) iterator.next();
