@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-08-31 00:14:35
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-08-31 21:53:32
+* @Last Modified time: 2018-09-01 10:18:00
 */
 package com.gougoucompany.designpattern.statusfirst;
 
@@ -238,8 +238,400 @@ SOLD状态执行减少糖果数量，以及发放的操作。暂时感觉不需�
 /*
 定义State interface 公有抽象方法是insertQuarter()、ejectQuarter()、trunCrank()、dispense()
 为机器中的每个状态实现状态类，这些类将负责在对应的状态下进行机器的行为SoldState、SoldOutState、NoQuarterState、HasQuarterState、WinnerState
-将动作委托到状态类，状态类都实现State接口
+将动作委托到状态类，状态类都实现State接口，这样的做法是有限状态机，状态太多会类爆炸的情况
 */
+
+package com.gougouocompany.designpattern.statussecond;
+
+/**  
+* <p>FileName: State.java</p>  
+* <p>Tile: State</p>  
+* <p>Description: </p>  
+* @author Clarence
+* @company gougouCompany
+* @date 2018年8月31日 下午10:11:52
+* @version 1.0  
+*/
+public interface State {
+	
+	//所有的状态的动作接口
+	void InsertQuarter();
+	
+	void ejectQuarter();
+	
+	void turnCrank();
+	
+	void dispense();
+}
+
+package com.gougouocompany.designpattern.statussecond;
+
+/**  
+* <p>FileName: SoldState.java</p>  
+* <p>Tile: SoldState</p>  
+* <p>Description: </p>  
+* @author Clarence
+* @company gougouCompany
+* @date 2018年9月1日 上午9:15:11
+* @version 1.0  
+*/
+public class SoldState implements State {
+	
+	GumballMachine gumballMachine;
+	
+	public SoldState(GumballMachine gumballMachine) {
+		// TODO Auto-generated constructor stub
+		this.gumballMachine = gumballMachine;
+	}
+
+	@Override
+	public void InsertQuarter() {
+		// TODO Auto-generated method stub
+		System.out.println("Please wait, we're already giving you a gumball");
+	}
+
+	@Override
+	public void ejectQuarter() {
+		// TODO Auto-generated method stub
+		System.out.println("Sorry, you already turned the crank");
+	}
+
+	@Override
+	public void turnCrank() {
+		// TODO Auto-generated method stub
+		System.out.println("Turning twice doesn't get you another gumball!");
+	}
+
+	@Override
+	public void dispense() {
+		// TODO Auto-generated method stub
+		gumballMachine.releaseBall();
+		if(gumballMachine.getCount() > 0) {
+			gumballMachine.setState(gumballMachine.getNoQuarterState());
+		} else {
+			System.out.println("Oops, out of gumballs!");
+			gumballMachine.setState(gumballMachine.getSoldOutState());
+		}
+	}
+
+}
+
+package com.gougouocompany.designpattern.statussecond;
+
+/**  
+* <p>FileName: SoldOutState.java</p>  
+* <p>Tile: SoldOutState</p>  
+* <p>Description: </p>  
+* @author Clarence
+* @company gougouCompany
+* @date 2018年9月1日 上午9:14:56
+* @version 1.0  
+*/
+public class SoldOutState implements State {
+	GumballMachine gumballMachine;
+
+	public SoldOutState(GumballMachine gumballMachine) {
+		// TODO Auto-generated constructor stub
+		this.gumballMachine = gumballMachine;
+	}
+
+	@Override
+	public void InsertQuarter() {
+		// TODO Auto-generated method stub
+		System.out.println("You can't insert a quarter, the machine is sold out");
+	}
+
+	@Override
+	public void ejectQuarter() {
+		// TODO Auto-generated method stub
+		System.out.println("You can't eject, you haven't inserted a quarter yet");
+	}
+
+	@Override
+	public void turnCrank() {
+		// TODO Auto-generated method stub
+		System.out.println("You turned, but there are no gumballs!");
+	}
+
+	@Override
+	public void dispense() {
+		// TODO Auto-generated method stub\
+		System.out.println("No gumball dispensed");
+	}
+
+}
+
+package com.gougouocompany.designpattern.statussecond;
+
+
+/**  
+* <p>FileName: NoQuarterSate.java</p>  
+* <p>Tile: NoQuarterSate</p>  
+* <p>Description: 糖果机初始化状态类，没有25分钱</p>  
+* @author Clarence
+* @company gougouCompany
+* @date 2018年8月31日 下午10:13:33
+* @version 1.0  
+*/
+public class NoQuarterState implements State{
+	GumballMachine gumballMachine;
+	
+	public NoQuarterState(GumballMachine gumballMachine) {
+		// TODO Auto-generated constructor stub
+		this.gumballMachine = gumballMachine;
+	}
+
+	@Override
+	public void InsertQuarter() {
+		// TODO Auto-generated method stub
+		System.out.println("You inserted a quarter");
+		gumballMachine.setState(gumballMachine.getHasQuarterState());
+		
+	}
+
+	@Override
+	public void ejectQuarter() {
+		// TODO Auto-generated method stub
+		System.out.println("You haven't inserted a quarter");
+	}
+
+	@Override
+	public void turnCrank() {
+		// TODO Auto-generated method stub
+		System.out.println("You turned, but there's no quarter");
+	}
+
+	@Override
+	public void dispense() {
+		// TODO Auto-generated method stub
+		System.out.println("You need to pay first");
+	}
+
+}
+
+
+package com.gougouocompany.designpattern.statussecond;
+
+/**  
+* <p>FileName: HasQuarterState.java</p>  
+* <p>Tile: HasQuarterState</p>  
+* <p>Description: </p>  
+* @author Clarence
+* @company gougouCompany
+* @date 2018年9月1日 上午9:14:44
+* @version 1.0  
+*/
+public class HasQuarterState implements State {
+	GumballMachine gumballMachine;
+	
+	public HasQuarterState(GumballMachine gumballMachine) {
+		// TODO Auto-generated constructor stub
+		this.gumballMachine = gumballMachine;
+	}
+
+	@Override
+	public void InsertQuarter() {
+		// TODO Auto-generated method stub
+		System.out.println("You can't insert another quarter");
+	}
+
+	@Override
+	public void ejectQuarter() {
+		// TODO Auto-generated method stub
+		System.out.println("Quarter returned"); 
+		gumballMachine.setState(gumballMachine.getNoQuarterState());
+	}
+
+	@Override
+	public void turnCrank() {
+		// TODO Auto-generated method stub
+		System.out.println("You turned....");
+		gumballMachine.setState(gumballMachine.getSoldState());
+	}
+
+	@Override
+	public void dispense() {
+		// TODO Auto-generated method stub
+		System.out.println("No gumball dispensed");
+	}
+
+}
+
+package com.gougouocompany.designpattern.statussecond;
+
+import java.awt.Container;
+
+/**  
+* <p>FileName: GumballMachine.java</p>  
+* <p>Tile: GumballMachine</p>  
+* <p>Description: </p>  
+* @author Clarence
+* @company gougouCompany
+* @date 2018年8月31日 下午10:19:34
+* @version 1.0  
+*/
+public class GumballMachine {
+	
+	//所有的状态
+	State soldOutState;
+	State noQuarterState;
+	State hasQuarterState;
+	State soldState;
+	
+	//表示糖果机的状态，是一个对象，而不是一个整数
+	State state = soldOutState;
+	int count = 0;
+	
+	public GumballMachine(int numberGumballs) {
+		soldOutState = new SoldOutState(this);
+		noQuarterState = new NoQuarterState(this);
+		hasQuarterState = new HasQuarterState(this);
+		soldState = new SoldState(this);
+		this.count = numberGumballs;
+		if(numberGumballs > 0) {
+			state = noQuarterState; //反之售罄状态
+		}
+	}
+	
+	public void insertQuarter() {
+		state.InsertQuarter();
+	}
+	
+	public void ejectQuarter() {
+		state.ejectQuarter();
+	}
+	
+	public void turnCrank() {
+		state.turnCrank();
+		state.dispense();
+	}
+	
+	public void  setState(State state) {
+		this.state = state;
+	}
+	
+	void releaseBall() {
+		System.out.println("A gumball comes rolling out the slot...");
+		if(count != 0) {
+			count = count - 1;
+		}
+	}
+
+	public State getSoldOutState() {
+		return soldOutState;
+	}
+
+	public void setSoldOutState(State soldOutState) {
+		this.soldOutState = soldOutState;
+	}
+
+	public State getNoQuarterState() {
+		return noQuarterState;
+	}
+
+	public void setNoQuarterState(State noQuarterState) {
+		this.noQuarterState = noQuarterState;
+	}
+
+	public State getHasQuarterState() {
+		return hasQuarterState;
+	}
+
+	public void setHasQuarterState(State hasQuarterState) {
+		this.hasQuarterState = hasQuarterState;
+	}
+
+	public State getSoldState() {
+		return soldState;
+	}
+
+	public void setSoldState(State soldState) {
+		this.soldState = soldState;
+	}
+
+
+	public int getCount() {
+		// TODO Auto-generated method stub
+		return count;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

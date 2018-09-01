@@ -89,6 +89,12 @@ public class GumballMachine {
 	public void setSoldState(State soldState) {
 		this.soldState = soldState;
 	}
+
+
+	public int getCount() {
+		// TODO Auto-generated method stub
+		return count;
+	}
 }
 
 

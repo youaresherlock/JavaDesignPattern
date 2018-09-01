@@ -11,6 +11,7 @@ package com.gougouocompany.designpattern.statussecond;
 */
 public interface State {
 	
+	//所有的状态的动作接口
 	void InsertQuarter();
 	
 	void ejectQuarter();
