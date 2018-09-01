@@ -1,5 +1,7 @@
 package com.gougouocompany.designpattern.statussecond;
 
+import java.util.Random;
+
 /**  
 * <p>FileName: HasQuarterState.java</p>  
 * <p>Tile: HasQuarterState</p>  
@@ -10,6 +12,8 @@ package com.gougouocompany.designpattern.statussecond;
 * @version 1.0  
 */
 public class HasQuarterState implements State {
+	//实现随机数，还要增加一个进入WinnerState状态的装换，顾客会从糖果机投币后状态进入转动曲柄状态。
+	Random randomWinner = new Random(System.currentTimeMillis()); //使用long种子创建一个新的随机数生成器
 	GumballMachine gumballMachine;
 	
 	public HasQuarterState(GumballMachine gumballMachine) {
@@ -34,7 +38,12 @@ public class HasQuarterState implements State {
 	public void turnCrank() {
 		// TODO Auto-generated method stub
 		System.out.println("You turned....");
-		gumballMachine.setState(gumballMachine.getSoldState());
+		int winner = randomWinner.nextInt(10); //[0,10)
+		if( winner == 0 && gumballMachine.getCount() > 1) {
+			gumballMachine.setState(gumballMachine.getWinnerState());
+		} else {
+			gumballMachine.setState(gumballMachine.getSoldState());
+		}
 	}
 
 	@Override
@@ -44,3 +53,17 @@ public class HasQuarterState implements State {
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

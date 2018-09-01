@@ -18,7 +18,8 @@ public class GumballMachine {
 	State noQuarterState;
 	State hasQuarterState;
 	State soldState;
-	
+	State winnerState;
+
 	//表示糖果机的状态，是一个对象，而不是一个整数
 	State state = soldOutState;
 	int count = 0;
@@ -28,6 +29,7 @@ public class GumballMachine {
 		noQuarterState = new NoQuarterState(this);
 		hasQuarterState = new HasQuarterState(this);
 		soldState = new SoldState(this);
+		winnerState = new WinnerState(this);
 		this.count = numberGumballs;
 		if(numberGumballs > 0) {
 			state = noQuarterState; //反之售罄状态
@@ -43,7 +45,7 @@ public class GumballMachine {
 	}
 	
 	public void turnCrank() {
-		state.turnCrank();
+		state.turnCrank(); 
 		state.dispense();
 	}
 	
@@ -89,13 +91,60 @@ public class GumballMachine {
 	public void setSoldState(State soldState) {
 		this.soldState = soldState;
 	}
+	
+	public State getWinnerState() {
+		return winnerState;
+	}
 
+	public void setWinnerState(State winnerState) {
+		this.winnerState = winnerState;
+	}
 
 	public int getCount() {
 		// TODO Auto-generated method stub
 		return count;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuffer printString = new StringBuffer();
+		printString.append("Mighty Gumballl, Inc.\nJava-enabled Standing Gumball Model #2004\nInventory: ");
+		printString.append(String.valueOf(count) + " gumballs\n");
+		printString.append("Machine is waiting for quarter\n");
+		return printString.toString();
+	}
 }
+
+/*
+Mighty Gumballl, Inc.
+Java-enabled Standing Gumball Model #2004
+Inventory: 5 gumballs
+Machine is waiting for quarter
+
+You inserted a quarter
+You turned....
+A gumball comes rolling out the slot...
+Mighty Gumballl, Inc.
+Java-enabled Standing Gumball Model #2004
+Inventory: 4 gumballs
+Machine is waiting for quarter
+
+You inserted a quarter
+You turned....
+A gumball comes rolling out the slot...
+You inserted a quarter
+You turned....
+YOU'RE A WINNER! You get two gumballs for your quarter
+A gumball comes rolling out the slot...
+A gumball comes rolling out the slot...
+Mighty Gumballl, Inc.
+Java-enabled Standing Gumball Model #2004
+Inventory: 1 gumballs
+Machine is waiting for quarter
+ */
 
 
 
