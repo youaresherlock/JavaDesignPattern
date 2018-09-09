@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-09-01 21:43:05
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-09-09 15:26:03
+* @Last Modified time: 2018-09-09 19:01:16
 */
 
 /*
@@ -192,6 +192,26 @@ JDK5.0以后，这两个类就不需要rmic来编译产生了，而是由JVM进�
 http://www.genady.net/rmi/v20/docs/installation/update_install.html这里面有eclipse下载安装的文档，大家可以看看
 直接创建了三个RMI文件，分别是客户端、服务端和公共接口的代码，大家可以具体运行看这篇博客比较详细，我的eclipse有问题暂时运行不了
 https://blog.csdn.net/sima1989/article/details/41045249
+这里我的命令行终于弄好了，但是eclipse插件一直使用错误
+
+cmd运行过程:
+首先不用eclipse创建项目，自己一个类一个类写，三个(接口，服务程序，客户端程序)放入同一个文件夹下面
+1.产生Stub和skeleton
+C:\Users\Clarence\Desktop\rmitest>rmic MyRemoteImpl
+警告: 为 JRMP 生成和使用骨架及静态存根
+已过时。骨架不再必要, 而静态存根
+已由动态生成的存根取代。建议用户
+不再使用rmic来生成骨架和静态存根。
+请参阅 java.rmi.server.UnicastRemoteObject 的文档。
+2.启动注册程序
+C:\Users\Clarence\Desktop\rmitest>rmiregistry
+3.启动服务
+C:\Users\Clarence\Desktop\rmitest>java MyRemoteImpl
+4.启动客户端
+C:\Users\Clarence\Desktop\rmitest>java MyRemoteClient
+Server says, 'Hey'
+可以看到客户端调用sayHello()方法结果打印出东西
+
 整个的实现过程可以分为下面几个步骤:
 1.创建远程对象  Server端实例化对象ServiceImpl
 2.在rmiregistry注册远程对象
@@ -330,6 +350,20 @@ public class GumballMonitorTestDrive {
 }
 
 
+/*
+我们前面的所有例子都是远程代理的实现方法
+但代理模式的变体很多
+代理模式: 
+	为另一个对象提供一个替身或占位符以控制对这个对象的访问
+远程代理控制访问远程对象
+虚拟代理控制访问开销大的资源
+保护代理基于权限控制对资源的访问
+如果有学习过安卓开发的话，绘制图片时，会在主线程中开启一个单独的线程来负责网络请求和结果处理，
+主线程根据请求到的结果来进行界面的绘制，这时候我们可以会用另一个图片或字符串设置字体后来显示在界面上，
+提醒用户进行等待。简单的方式是利用虚拟代理，虚拟代理可以代理Icon,管理背景的加载，并在加载未完成前显示提示字符串，加载完成之后显示
+加载的图片。
+具体的代码见项目com.gougoucompany.designpattern.virtualproxy包
+*/
 
 
 

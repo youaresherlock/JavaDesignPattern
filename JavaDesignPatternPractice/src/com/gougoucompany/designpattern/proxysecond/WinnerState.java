@@ -12,7 +12,7 @@ import org.w3c.dom.css.ElementCSSInlineStyle;
 * @version 1.0  
 */
 public class WinnerState implements State {
-	GumballMachine gumballMachine;
+	transient GumballMachine gumballMachine;
 	
 	public WinnerState(GumballMachine gumballMachine) {
 		// TODO Auto-generated constructor stub

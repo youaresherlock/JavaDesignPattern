@@ -14,7 +14,7 @@ import java.util.Random;
 public class HasQuarterState implements State {
 	//实现随机数，还要增加一个进入WinnerState状态的装换，顾客会从糖果机投币后状态进入转动曲柄状态。
 	Random randomWinner = new Random(System.currentTimeMillis()); //使用long种子创建一个新的随机数生成器
-	GumballMachine gumballMachine;
+	transient GumballMachine gumballMachine;
 	
 	public HasQuarterState(GumballMachine gumballMachine) {
 		// TODO Auto-generated constructor stub

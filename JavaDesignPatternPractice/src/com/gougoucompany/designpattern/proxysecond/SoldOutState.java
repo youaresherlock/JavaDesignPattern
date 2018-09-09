@@ -10,7 +10,7 @@ package com.gougoucompany.designpattern.proxysecond;
 * @version 1.0  
 */
 public class SoldOutState implements State {
-	GumballMachine gumballMachine;
+	transient GumballMachine gumballMachine;
 
 	public SoldOutState(GumballMachine gumballMachine) {
 		// TODO Auto-generated constructor stub

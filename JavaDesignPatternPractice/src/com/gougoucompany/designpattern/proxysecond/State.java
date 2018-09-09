@@ -1,15 +1,9 @@
 package com.gougoucompany.designpattern.proxysecond;
 
-/**  
-* <p>FileName: State.java</p>  
-* <p>Tile: State</p>  
-* <p>Description: </p>  
-* @author Clarence
-* @company gougouCompany
-* @date 2018年8月31日 下午10:11:52
-* @version 1.0  
-*/
-public interface State {
+import java.io.Serializable;
+
+//将返回的State类型改成可序列化的类型
+public interface State extends Serializable{
 	
 	//所有的状态的动作接口
 	void InsertQuarter();

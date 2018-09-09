@@ -11,7 +11,7 @@ package com.gougoucompany.designpattern.proxysecond;
 * @version 1.0  
 */
 public class NoQuarterState implements State{
-	GumballMachine gumballMachine;
+	transient GumballMachine gumballMachine;
 	
 	public NoQuarterState(GumballMachine gumballMachine) {
 		// TODO Auto-generated constructor stub
