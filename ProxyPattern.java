@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-09-01 21:43:05
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-09-09 19:01:16
+* @Last Modified time: 2018-09-09 21:31:36
 */
 
 /*
@@ -364,6 +364,321 @@ public class GumballMonitorTestDrive {
 加载的图片。
 具体的代码见项目com.gougoucompany.designpattern.virtualproxy包
 */
+
+/*
+下面我们将使用Java API中java.lang.reflect包中的代理支持，在运行时动态的创建一个代理类(感兴趣的可以研究一下Java反射)
+实现一个或多个接口，并将方法的调用转发到你所指定的类。由于实际的代理类是在运行的时候创建的，因此这个Java技术称之为动态代理
+我们比如有一个PersonBean接口类，允许设置或者获得一个人的信息。由于不同的人可能允许调用的方法不同，因此需要动态创建两个代理，
+创建步骤:
+1.创建两个InvokeHandler
+	在提供方法调用的时候，会触发Handler中的invoke方法，以此来进行权限设置
+2.写代码创建动态代理
+3.利用适当的代理来包装PersonBean对象
+*/
+package com.gougoucomany.designpattern.dynamicproxy;
+public interface PersonBean {
+	String getName();
+	
+	String getGender();
+	
+	String getInterests();
+	
+	int getHotOrNotRating();
+	
+	void setName(String name);
+	
+	void setGender(String gender);
+	
+	void setInterests(String interests);
+	
+	void setHotOrNotRating(int rating);
+}
+//接口实现类
+package com.gougoucomany.designpattern.dynamicproxy;
+
+
+public class PersonBeanImpl implements PersonBean {
+
+	String name;
+	String gender;
+	String interests;
+	int rating;
+	int ratingCount = 0;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getInterests() {
+		return interests;
+	}
+	public void setInterests(String interests) {
+		this.interests = interests;
+	}
+	@Override
+	public int getHotOrNotRating() {
+		if(ratingCount == 0) return 0;
+		return (rating / ratingCount);
+	}
+	@Override
+	public void setHotOrNotRating(int rating) {
+		this.rating = rating;
+		ratingCount ++;
+		
+	}
+}
+//两个Handler动态代理帮助类
+package com.gougoucomany.designpattern.dynamicproxy;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import javax.print.attribute.standard.PrinterStateReason;
+
+public class OwnerInvocationHandler implements InvocationHandler{
+	
+	PersonBean person;
+	
+	public OwnerInvocationHandler(PersonBean person) {
+		this.person = person;
+	}
+
+	@Override
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		try {
+			if(method.getName().startsWith("get")) {
+				//自己可以调用get类型的方法
+				return method.invoke(person, args);
+			} else if(method.getName().equals("setHotOrNotRating")) {
+				//自己不能调用这个方法,如果调用报出没有访问权限异常
+				throw new IllegalAccessException();
+			} else if(method.getName().startsWith("set")) {
+				return method.invoke(person, args);
+			}
+		} catch(InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+}
+
+
+package com.gougoucomany.designpattern.dynamicproxy;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+public class NonOwnerInvocationHandler implements InvocationHandler{
+	
+	PersonBean person;
+	
+	public NonOwnerInvocationHandler(PersonBean person) {
+		this.person = person;
+	}
+
+	@Override
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		try {
+			if(method.getName().startsWith("get")) {
+				return method.invoke(person, args);
+			} else if(method.getName().equals("setHotOrNotRating")) {
+				return method.invoke(person, args); 
+			} else if(method.getName().startsWith("set")) {
+				throw new IllegalAccessException();
+			}
+		} catch (InvocationTargetException e) {
+		}
+		return null;
+	}
+
+}
+
+//测试类
+package com.gougoucomany.designpattern.dynamicproxy;
+
+import java.lang.reflect.Proxy;
+import java.util.HashMap;
+
+public class MatchMakingTestDrive {
+	HashMap<String, PersonBean> datingDB = new HashMap<>();
+	
+	public static void main(String[] args) {
+		MatchMakingTestDrive test = new MatchMakingTestDrive();
+		test.drive();
+	}
+	
+	public void drive() {
+		PersonBean joe = getPersonFromDatabase("joe Javabean");
+		PersonBean ownerProxy = getOwnerProxy(joe);
+		System.out.println("Name is " + ownerProxy.getName());
+		ownerProxy.setInterests("bowling, Go");
+		System.out.println("Interests set from owner proxy");
+		try {
+			ownerProxy.setHotOrNotRating(10);
+		} catch (Exception e) {
+			System.out.println("Can't set rating from owner proxy");
+		}
+		System.out.println("Rating is " + ownerProxy.getHotOrNotRating());
+		
+		PersonBean nonOwnerProxy = getNonOwnerProxy(joe);
+		System.out.println("Name is " + nonOwnerProxy.getName());
+		try {
+			nonOwnerProxy.setInterests("bolling, Go");
+		} catch (Exception e) {
+			System.out.println("Can't set interests from non owner proxy");
+		}
+		nonOwnerProxy.setHotOrNotRating(3);
+		System.out.println("Rating set from non owner proxy");
+		System.out.println("Raing is " + nonOwnerProxy.getHotOrNotRating());
+		
+	}
+	
+	public MatchMakingTestDrive() {
+		initializeDatabase();
+	}
+	
+	//需要一个person对象，然后返回它的代理，利用Proxy类的静态newProxyInstance()创建代理
+	PersonBean getOwnerProxy(PersonBean person) {
+		
+		return (PersonBean) Proxy.newProxyInstance(
+				person.getClass().getClassLoader(),
+				person.getClass().getInterfaces(),
+				new OwnerInvocationHandler(person));
+	}
+	
+	PersonBean getNonOwnerProxy(PersonBean person) {
+		
+		return (PersonBean)Proxy.newProxyInstance(
+				person.getClass().getClassLoader(),
+				person.getClass().getInterfaces(),
+				new NonOwnerInvocationHandler(person));
+	}
+	
+	PersonBean getPersonFromDatabase(String name) {
+		return (PersonBean)datingDB.get(name);
+	}
+	
+	void initializeDatabase() {
+		PersonBean joe = new PersonBeanImpl();
+		joe.setName("joe Javabean");
+		joe.setInterests("cars, computers, music");
+		joe.setHotOrNotRating(7);
+		datingDB.put(joe.getName(), joe);
+		
+		PersonBean kelly = new PersonBeanImpl();
+		kelly.setName("Kelly klosure");
+		kelly.setInterests("ebay, movies, music");
+		kelly.setHotOrNotRating(6);
+		datingDB.put(kelly.getName(), kelly);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
