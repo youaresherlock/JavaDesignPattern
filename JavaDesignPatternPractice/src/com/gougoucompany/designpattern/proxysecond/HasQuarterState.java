@@ -1,4 +1,4 @@
-package com.gougouocompany.designpattern.statussecond;
+package com.gougoucompany.designpattern.proxysecond;
 
 import java.util.Random;
 

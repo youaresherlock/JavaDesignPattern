@@ -1,6 +1,5 @@
-package com.gougouocompany.designpattern.statussecond;
+package com.gougoucompany.designpattern.statussecond;
 
-import java.awt.print.Printable;
 
 /**  
 * <p>FileName: GumballMachineTestDrive.java</p>  
@@ -28,6 +27,7 @@ public class GumballMachineTestDrive {
 		gumballMachine.turnCrank();
 		
 		System.out.println(gumballMachine);
+		
 	}
 }
 

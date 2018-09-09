@@ -1,4 +1,4 @@
-package com.gougouocompany.designpattern.statussecond;
+package com.gougoucompany.designpattern.statussecond;
 
 import org.w3c.dom.css.ElementCSSInlineStyle;
 

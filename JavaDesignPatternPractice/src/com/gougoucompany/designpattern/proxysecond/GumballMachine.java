@@ -1,6 +1,7 @@
-package com.gougouocompany.designpattern.statussecond;
+package com.gougoucompany.designpattern.proxysecond;
 
-import java.awt.Container;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 /**  
 * <p>FileName: GumballMachine.java</p>  
@@ -11,8 +12,9 @@ import java.awt.Container;
 * @date 2018年8月31日 下午10:19:34
 * @version 1.0  
 */
-public class GumballMachine {
+public class GumballMachine extends UnicastRemoteObject implements GumballMachineRemote{
 	
+	String location;
 	//所有的状态
 	State soldOutState;
 	State noQuarterState;
@@ -24,7 +26,8 @@ public class GumballMachine {
 	State state = soldOutState;
 	int count = 0;
 	
-	public GumballMachine(int numberGumballs) {
+	public GumballMachine(String location, int numberGumballs) throws RemoteException {
+		this.location = location;
 		soldOutState = new SoldOutState(this);
 		noQuarterState = new NoQuarterState(this);
 		hasQuarterState = new HasQuarterState(this);
@@ -34,6 +37,10 @@ public class GumballMachine {
 		if(numberGumballs > 0) {
 			state = noQuarterState; //反之售罄状态
 		}
+	}
+	
+	public String getLocation() {
+		return location;
 	}
 	
 	public void insertQuarter() {
@@ -47,6 +54,10 @@ public class GumballMachine {
 	public void turnCrank() {
 		state.turnCrank(); 
 		state.dispense();
+	}
+	
+	public State getState() {
+		return state;
 	}
 	
 	public void  setState(State state) {

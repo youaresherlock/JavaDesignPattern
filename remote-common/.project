@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>JavaDesignPattern</name>
+	<name>remote-common</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -10,14 +10,8 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
-		<buildCommand>
-			<name>net.genady.rmi.RMIBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>net.genady.rmi.RMINature</nature>
 	</natures>
 </projectDescription>
