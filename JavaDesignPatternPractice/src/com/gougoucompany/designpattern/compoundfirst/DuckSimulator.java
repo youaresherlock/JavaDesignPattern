@@ -16,20 +16,43 @@ public class DuckSimulator {
 	 * <p>Description: </p>
 	 */
 	void simulator(AbstractDuckFactory duckFactory) {
-		Quackable mallardDuck = duckFactory.createMallardDuck();
+		//创建Quackable对象
 		Quackable redheadDuck = duckFactory.createRedheadDuck();
 		Quackable rubberDuck = duckFactory.createRubberDuck();
 		Quackable duckCall = duckFactory.createDuckCall();
 		Quackable gooseDuck = new GooseAdapter(new Goose()); //通过适配器可以让鹅和鸭子一样 不计入鹅的叫声，因此不被装饰
 		
+		System.out.println("\nDuck Simulator: With composite - Flocks");
 		
-		System.out.println("\nDuck Simulator: With Abstract Factory");
+		//创建一个Flock,然后把一些Quackable塞给他，Flock是主群
+		Flock flockOfDucks = new Flock();
 		
-		simulator(mallardDuck);		
-		simulator(redheadDuck);		
-		simulator(rubberDuck);		
-		simulator(duckCall);
-		simulator(gooseDuck);
+		flockOfDucks.add(redheadDuck);
+		flockOfDucks.add(rubberDuck);
+		flockOfDucks.add(duckCall);
+		flockOfDucks.add(gooseDuck);
+		
+		Flock flockOfMallards = new Flock();
+		//创建绿头鸭小家族
+		Quackable mallardOne = duckFactory.createMallardDuck();
+		Quackable mallardTwo = duckFactory.createMallardDuck();
+		Quackable mallardThree = duckFactory.createMallardDuck();
+		Quackable mallardFour = duckFactory.createMallardDuck();
+		
+		flockOfMallards.add(mallardOne);
+		flockOfMallards.add(mallardTwo);
+		flockOfMallards.add(mallardThree);
+		flockOfMallards.add(mallardFour);
+		
+		flockOfDucks.add(flockOfMallards); //将绿头鸭群加入主群
+		
+		//测试一整群
+		System.out.println("\nDuck Simulator: Whole Flock Simulation");
+		simulator(flockOfDucks);
+		
+		//只测试绿头鸭群
+		System.out.println("\nDuck Simulator: Mallard Flock Simulation");
+		simulator(flockOfMallards);
 		
 		System.out.println("The ducks quacked " + QuackCounter.getQuacks() + " times");
 	}
