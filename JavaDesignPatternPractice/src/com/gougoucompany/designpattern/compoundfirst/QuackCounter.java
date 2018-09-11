@@ -15,11 +15,24 @@ public class QuackCounter implements Quackable {
 
 	@Override
 	public void quack() {
-		duck.quack();
+		duck.quack(); //当调用quack()方法，鸭子鸣叫，因为鸭子具体类已经在quack()中调用了通知观察者的方法，因此不需要在此方法中添加
 		numberOfQuacks++;
 	}
 	
 	public static int getQuacks() {
 		return numberOfQuacks;
+	}
+
+	/**
+	 * 被装饰者装饰的鸭子也实现了Quackable接口，所以也是被观察者QuackObservable
+	 */
+	@Override
+	public void registerObserver(Observer observer) {
+		duck.registerObserver(observer);
+	}
+
+	@Override
+	public void notifyObservers() {
+		duck.notifyObservers();
 	}
 }

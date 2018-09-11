@@ -36,4 +36,25 @@ public class Flock implements Quackable {
 		}
 	}
 
+	/**
+	 * 如果我们观察一个组合，就等于观察我们组合内的所有东西，因此，当你注册要观察某个群(flock),
+	 * 就等于注册要观察所有的孩子，这甚至还包括另一个群(鸭子主群中有鸭子群也有鸭子)
+	 * 当向Flock注册观察者时，其实等于向Flock中的所有Quackable注册观察者，不管是一个鸭子还是一群鸭子
+	 */
+	@Override
+	public void registerObserver(Observer observer) {
+		Iterator<Quackable> iterator = quackers.iterator();
+		while(iterator.hasNext()) {
+			Quackable duck = (Quackable) iterator.next(); //可能是一个群，也可能是一个鸭子
+			//如果是一个群，则会深度递归，直到所有子节点都注册完成观察者
+			duck.registerObserver(observer);
+		}
+
+	}
+
+	//这里每个鸭子都实现了这个方法，因此可以为空
+	@Override
+	public void notifyObservers() {
+	}
+
 }

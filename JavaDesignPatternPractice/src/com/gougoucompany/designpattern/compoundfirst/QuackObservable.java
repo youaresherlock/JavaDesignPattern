@@ -5,7 +5,13 @@ package com.gougoucompany.designpattern.compoundfirst;
  * QuackObservable是一个接口，任何想被观察的Quackable都必须实现QuackObservable接口
  */
 public interface QuackObservable {
-	public void registerObserver(Observer observer);
-	public void notifyObservers();
+	/**
+	 * 具有注册观察者的方法，任何实现了Observer接口的观察者都可以监听呱呱叫
+	 * <p>Title: registerObserver</p>  
+	 * <p>Description: </p>  
+	 * @param observer
+	 */
+	public void registerObserver(Observer observer); 
+	public void notifyObservers(); //通知观察者的方法
 	
 }

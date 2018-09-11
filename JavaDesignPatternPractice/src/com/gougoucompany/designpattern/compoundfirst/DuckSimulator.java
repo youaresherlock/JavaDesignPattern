@@ -20,12 +20,11 @@ public class DuckSimulator {
 		Quackable redheadDuck = duckFactory.createRedheadDuck();
 		Quackable rubberDuck = duckFactory.createRubberDuck();
 		Quackable duckCall = duckFactory.createDuckCall();
+		//这里鹅没有被QuackCounter所修饰，因此不加入计数
 		Quackable gooseDuck = new GooseAdapter(new Goose()); //通过适配器可以让鹅和鸭子一样 不计入鹅的叫声，因此不被装饰
 		
-		System.out.println("\nDuck Simulator: With composite - Flocks");
-		
 		//创建一个Flock,然后把一些Quackable塞给他，Flock是主群
-		Flock flockOfDucks = new Flock();
+		Flock flockOfDucks = new Flock(); 
 		
 		flockOfDucks.add(redheadDuck);
 		flockOfDucks.add(rubberDuck);
@@ -44,15 +43,12 @@ public class DuckSimulator {
 		flockOfMallards.add(mallardThree);
 		flockOfMallards.add(mallardFour);
 		
-		flockOfDucks.add(flockOfMallards); //将绿头鸭群加入主群
+		flockOfDucks.add(flockOfMallards);
 		
-		//测试一整群
-		System.out.println("\nDuck Simulator: Whole Flock Simulation");
+		System.out.println("\nDuck Simulator: With Observer");
+		Quackologist quackologist = new Quackologist(); //观察者
+		flockOfDucks.registerObserver(quackologist); //将quackologist注册成为一个群的观察者
 		simulator(flockOfDucks);
-		
-		//只测试绿头鸭群
-		System.out.println("\nDuck Simulator: Mallard Flock Simulation");
-		simulator(flockOfMallards);
 		
 		System.out.println("The ducks quacked " + QuackCounter.getQuacks() + " times");
 	}
