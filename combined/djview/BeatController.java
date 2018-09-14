@@ -51,3 +51,4 @@ public class BeatController implements ControllerInterface {
 		model.setBPM(bpm);
 	}
 }
+
