@@ -133,9 +133,26 @@ public class DJView implements ActionListener,  BeatObserver, BPMObserver {
         insideControlPanel.add(buttonPanel);
         controlPanel.add(insideControlPanel);
         
+        /*
+        In general, when you want to set a border on a standard Swing component
+        other than JPanel or JLabel, we recommend that you put the component in a JPanel and set the border on the JPanel.
+        凡是实现了JComponent接口的组件都可以设置边框，建议在JPanel上设置边框
+        可以看到BorderFactory是一个标准边框对象的工厂类,返回的对象是实现了Border接口的对象，Border接口下有具体的各种标准边框类
+        createEmptyBorder():
+        Creates an empty border that takes up space but which does no drawing, specifying the width of the top,
+        left, bottom, and right side
+        */
         bpmLabel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         bpmOutputLabel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
+        /*
+        Sets the defaultButton property, which determines the current default button for this JRootPane. 
+        The default button is the button which will be activated when a UI-defined activation event 
+        (typically the Enter key) occurs in the root pane regardless of whether or not the button has keyboard
+        focus (unless there is another component within the root pane which consumes the activation event, such as a
+        JTextPane). For default activation to work, the button must be an enabled descendent of the root pane when 
+        activation occurs. To remove a default button from this root pane, set this property to null.
+        */
         controlFrame.getRootPane().setDefaultButton(setBPMButton);
         controlFrame.getContentPane().add(controlPanel, BorderLayout.CENTER);
 
@@ -143,6 +160,9 @@ public class DJView implements ActionListener,  BeatObserver, BPMObserver {
         controlFrame.setVisible(true);
     }
 
+    /*
+    这些方法将菜单中的Start和Stop项变成enable或disable.控制器可以利用这些接口方法改变用户界面
+    */
 	public void enableStopMenuItem() {
     	stopMenuItem.setEnabled(true);
 	}
@@ -159,8 +179,12 @@ public class DJView implements ActionListener,  BeatObserver, BPMObserver {
     	startMenuItem.setEnabled(false);
 	}
 
+    /*
+    不同按钮被单击，将信息传给控制器来进一步改变模型的
+    */
     public void actionPerformed(ActionEvent event) {
 		if (event.getSource() == setBPMButton) {
+            //Parses the string argument as a signed decimal integer.
 			int bpm = Integer.parseInt(bpmTextField.getText());
         	controller.setBPM(bpm);
 		} else if (event.getSource() == increaseBPMButton) {

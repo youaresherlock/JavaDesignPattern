@@ -1,5 +1,5 @@
 package headfirst.designpatterns.combined.djview;
-  
+ 
 public interface BeatModelInterface {
 	void initialize();
   
