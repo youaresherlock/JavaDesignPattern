@@ -5,9 +5,9 @@ package com.gougoucompany.designpattern.mvc;
 这样没有依赖，可以随时替换不同控制器的实现类
 */
 public interface ControllerInterface {
-	void sart();
 	void stop();
 	void increaseBPM();
 	void decreaseBPM();
 	void setBPM(int bpm);
+	void start();
 }

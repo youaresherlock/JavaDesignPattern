@@ -5,8 +5,8 @@ import javax.swing.JProgressBar;
 //脉动柱组件
 public class BeatBar extends JProgressBar implements Runnable{
 	private static final long serialVersionUID = 2L;
-	JProgressBar progresssBar; //进度条
 	Thread thread;
+	JProgressBar progressBar;
 	
 	public BeatBar() {
 		thread = new Thread(this);
@@ -21,6 +21,7 @@ public class BeatBar extends JProgressBar implements Runnable{
 		// TODO Auto-generated method stub
 		for(;;) {
 			int value = getValue();
+			System.out.println("进度条的值是:" + value);
 			value = (int)(value * .75); //从设置的值开始缩减到接近0
 			setValue(value);
 			repaint();

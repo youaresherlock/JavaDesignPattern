@@ -215,7 +215,7 @@ public class DJView implements ActionListener,  BeatObserver, BPMObserver {
   
   /*
   模型开始一个新的节拍时，updateBeat()方法会被调用。这时候，我们让脉动柱跳一下，
-  我们设置为最大值100，让脉动柱自行处理动画部分
+  我们设置为100，让脉动柱自行处理动画部分
   */
 	public void updateBeat() {
 		if (beatBar != null) {

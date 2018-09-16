@@ -1,12 +1,14 @@
 package com.gougoucompany.designpattern.mvc;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 //DJView是一个观察者，同时关心实时节拍和BPM的改变
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -53,9 +55,10 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 		viewPanel = new JPanel(new GridLayout(1,  2));
 		viewFrame = new JFrame("View");
 		viewFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		viewFrame.setSize(new Dimension(100,  80));
+		//viewFrame.setSize(new Dimension(500,  400));
 		bpmOutputLabel = new JLabel("offline", SwingConstants.CENTER);
 		beatBar = new BeatBar();
+		beatBar.setBackground(Color.GREEN);
 		beatBar.setValue(0);
 		JPanel bpmPanel = new JPanel(new GridLayout(2,  1));
 		bpmPanel.add(beatBar);
@@ -63,6 +66,7 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 		viewPanel.add(bpmPanel);
 		viewFrame.getContentPane().add(viewPanel, BorderLayout.CENTER);
 		viewFrame.pack();
+		viewFrame.setSize(600, 400);
 		viewFrame.setVisible(true);
 	}
 	
@@ -71,14 +75,14 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		controlFrame = new JFrame("Control");
 		controlFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		controlFrame.setSize(new Dimension(100, 80));
+		//controlFrame.setSize(new Dimension(100, 80));
 		
 		controlPanel = new JPanel(new GridLayout(1, 2));
 		
 		menuBar = new JMenuBar();
 		menu = new JMenu("DJ Control"); //菜单
 		startMenuItem = new JMenuItem("Start");
-		menu.add(startMenuItem);
+		menu.add(startMenuItem); //添加开始菜单
 		startMenuItem.addActionListener(new ActionListener() {
 			
 			@Override
@@ -86,18 +90,97 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 				controller.start(); ////控制器调用start方法，模型开始控制播放音乐过程的逻辑
 			}
 		});
+		stopMenuItem = new JMenuItem("Stop");
+		menu.add(stopMenuItem); //添加停止菜单项
+		stopMenuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				controller.stop();
+			}
+		});
+		JMenuItem exit = new JMenuItem("Quit"); //添加退出菜单
+		exit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				System.exit(0);
+			}
+		});
+		
+		menu.add(exit);
+		menuBar.add(menu);
+		controlFrame.setJMenuBar(menuBar);
+		
+		bpmTextField = new JTextField(2);
+		bpmLabel = new JLabel("Enter BPM:", SwingConstants.RIGHT);
+		setBPMButton = new JButton("Set");
+		setBPMButton.setSize(new Dimension(10, 40));
+		increaseBPMButton = new JButton(">>");
+		decreaseBPMButton = new JButton("<<");
+		//注册本类监听set,<<,>>点击事件的监听
+		setBPMButton.addActionListener(this);
+		increaseBPMButton.addActionListener(this);
+		decreaseBPMButton.addActionListener(this);
+		
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+		
+		buttonPanel.add(decreaseBPMButton);
+		buttonPanel.add(increaseBPMButton);
+		
+		JPanel enterPanel = new JPanel(new GridLayout(1, 2));
+		enterPanel.add(bpmLabel);
+		enterPanel.add(bpmTextField);
+		JPanel insideControlPanel = new JPanel(new GridLayout(3, 1));
+		insideControlPanel.add(enterPanel);
+		insideControlPanel.add(setBPMButton);
+		insideControlPanel.add(buttonPanel);
+		controlPanel.add(insideControlPanel);
+		
+		bpmLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		bpmOutputLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		
+		controlFrame.getRootPane().setDefaultButton(setBPMButton);
+		controlFrame.getContentPane().add(controlPanel, BorderLayout.CENTER);
+		
+		controlFrame.pack();
+		controlFrame.setSize(800, 400);
+		controlFrame.setVisible(true);
 	}
 
+	/*
+            模型BPM状态改变时，updateBPM()方法会被调用。
+            这时候我们更新当前BPM的显示。我们可以通过直接请求模型而得到这个值
+    */
 	@Override
 	public void updateBPM() {
 		// TODO Auto-generated method stub
-
+		if(model != null) {
+			int bpm = model.getBPM();
+			if(bpm == 0) {
+				if(bpmOutputLabel != null) {
+					bpmOutputLabel.setText("offline");
+				}
+			} else {
+				if(bpmOutputLabel != null) {
+					bpmOutputLabel.setText("Current BPM: " + model.getBPM());
+				}
+			}
+		}
 	}
 
+	/**
+	 * 模型开始一个新的节拍时，updateBeat()方法会被调用。这时候，我们让脉动柱跳一下，我们设置
+	 * 为100，让脉动柱自行处理动画部分。
+	 */
 	@Override
 	public void updateBeat() {
 		// TODO Auto-generated method stub
-
+		if(beatBar != null) {
+			beatBar.setValue(100);
+		}
 	}
 	
 	/*
@@ -120,12 +203,22 @@ public class DJView implements ActionListener, BeatObserver, BPMObserver {
 		startMenuItem.setEnabled(false);
 	}
 	
+	//不同按钮被单击，将信息传给控制器来进一步改变模型的
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-
+		if(e.getSource() == setBPMButton) {
+			//如果bpmTextField不为空，并且内容不是空字符串
+			if(bpmTextField != null &&  !bpmTextField.getText().isEmpty()) {
+				int bpm = Integer.parseInt(bpmTextField.getText());
+				controller.setBPM(bpm);
+			} 
+		} else if(e.getSource() == increaseBPMButton) {
+			controller.increaseBPM();
+		} else if(e.getSource() == decreaseBPMButton) {
+			controller.decreaseBPM();
+		}
 	}
-
 }
 
 

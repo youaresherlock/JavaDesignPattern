@@ -20,7 +20,7 @@ public class BeatController implements ControllerInterface {
 	}
 	
 	@Override
-	public void sart() {
+	public void start() {
 		// TODO Auto-generated method stub
 		model.on();
 		view.disableStartMenuItem();
