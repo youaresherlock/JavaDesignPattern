@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-09-11 08:21:02
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-09-16 21:46:43
+* @Last Modified time: 2018-09-17 09:08:26
 */
 /*
 复合模式
@@ -1251,19 +1251,27 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 
 	public void buildTrackAndStart() {
 		int[] trackList = {35, 0, 46, 0};
-
+		
 		sequence.deleteTrack(null);
 		track = sequence.createTrack();
-
 		makeTracks(trackList);
-		track.add(makeEvent(192,9,1,0,4));      
+		
+		MetaMessage metaMessage = new MetaMessage();
+		String text = "a metaEvent maker";
 		try {
-			//Sets the current sequence on which the sequencer operates.
-			sequencer.setSequence(sequence);                    
-		} catch(Exception e) {
+			metaMessage.setMessage(47, text.getBytes(), text.length());
+		} catch (InvalidMidiDataException e1) {
+			e1.printStackTrace();
+		}
+		track.add(new MidiEvent(metaMessage, 3)); //这里是为了产生MetaEvent事件，Type设置为47,这样脉动柱进度条就可以100->0 100->0的动态形式
+		track.add(makeEvent(192, 9, 1, 0, 4));
+		
+		try {
+			sequencer.setSequence(sequence);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	} 
+	}
 
 	public void makeTracks(int[] list) {        
 
@@ -1303,9 +1311,12 @@ package com.gougoucompany.designpattern.mvc;
 import javax.swing.JProgressBar;
 
 //脉动柱组件
+package com.gougoucompany.designpattern.mvc;
+
+import javax.swing.JProgressBar;
+
+//脉动柱组件
 public class BeatBar extends JProgressBar implements Runnable{
-	private static final long serialVersionUID = 2L;
-	JProgressBar progresssBar; //进度条
 	Thread thread;
 	
 	public BeatBar() {
@@ -1318,9 +1329,9 @@ public class BeatBar extends JProgressBar implements Runnable{
 	//线程的run方法是一个死循环，因此始终监听脉动柱的数值变化，来进行进度条的设置
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		for(;;) {
 			int value = getValue();
+			System.out.println("进度条的值是:" + value);
 			value = (int)(value * .75); //从设置的值开始缩减到接近0
 			setValue(value);
 			repaint();
@@ -1335,6 +1346,7 @@ public class BeatBar extends JProgressBar implements Runnable{
 	}
 
 }
+
 
 
 

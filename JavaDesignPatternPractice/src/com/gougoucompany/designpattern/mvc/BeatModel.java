@@ -3,6 +3,7 @@ package com.gougoucompany.designpattern.mvc;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
@@ -56,9 +57,18 @@ public class BeatModel implements BeatModelInterface, MetaEventListener {
 		
 		sequence.deleteTrack(null);
 		track = sequence.createTrack();
-		
 		makeTracks(trackList);
+		
+		MetaMessage metaMessage = new MetaMessage();
+		String text = "a metaEvent maker";
+		try {
+			metaMessage.setMessage(47, text.getBytes(), text.length());
+		} catch (InvalidMidiDataException e1) {
+			e1.printStackTrace();
+		}
+		track.add(new MidiEvent(metaMessage, 3)); //这里是为了产生MetaEvent事件，Type设置为47,这样脉动柱进度条就可以100->0 100->0的动态形式
 		track.add(makeEvent(192, 9, 1, 0, 4));
+		
 		try {
 			sequencer.setSequence(sequence);
 		} catch (Exception e) {

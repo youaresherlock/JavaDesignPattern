@@ -4,9 +4,7 @@ import javax.swing.JProgressBar;
 
 //脉动柱组件
 public class BeatBar extends JProgressBar implements Runnable{
-	private static final long serialVersionUID = 2L;
 	Thread thread;
-	JProgressBar progressBar;
 	
 	public BeatBar() {
 		thread = new Thread(this);
@@ -18,7 +16,6 @@ public class BeatBar extends JProgressBar implements Runnable{
 	//线程的run方法是一个死循环，因此始终监听脉动柱的数值变化，来进行进度条的设置
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		for(;;) {
 			int value = getValue();
 			System.out.println("进度条的值是:" + value);

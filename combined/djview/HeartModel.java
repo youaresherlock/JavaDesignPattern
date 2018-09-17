@@ -19,6 +19,7 @@ public class HeartModel implements HeartModelInterface, Runnable {
 		int lastrate = -1;
 
 		for(;;) {
+			//可以看到time有二分之一的几率改变，因此rate不会一直波动太大
 			int change = random.nextInt(10);
 			if (random.nextInt(2) == 0) {
 				change = 0 - change;
