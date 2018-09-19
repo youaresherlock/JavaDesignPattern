@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-09-19 10:53:07
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-09-19 13:52:33
+* @Last Modified time: 2018-09-19 16:20:25
 */
 /*
 责任链模式
@@ -113,6 +113,21 @@ public class ErrorLogger extends AbstractLogger{
 		System.out.println("Error Console::Logger: " + message);
 	}
 
+}
+
+
+package com.gougoucompany.designpattern.chain;
+
+public class FileLogger extends AbstractLogger {
+ 
+   public FileLogger(int level){
+      this.level = level;
+   }
+ 
+   @Override
+   protected void write(String message) {    
+      System.out.println("File::Logger: " + message);
+   }
 }
 
 //创建不同类型的记录器，赋予他们不同的错误级别，并在每个记录器中设置下一个记录器。每个记录器中的下一个记录器代表的是链的一部分。
