@@ -2,7 +2,7 @@
 * @Author: Clarence
 * @Date:   2018-09-11 08:21:02
 * @Last Modified by:   Clarence
-* @Last Modified time: 2018-09-17 09:08:26
+* @Last Modified time: 2018-09-21 09:54:16
 */
 /*
 复合模式
@@ -1346,7 +1346,6 @@ public class BeatBar extends JProgressBar implements Runnable{
 	}
 
 }
-
 
 
 
